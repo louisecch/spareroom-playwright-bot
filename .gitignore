@@ -1,0 +1,41 @@
+# dependencies
+node_modules/
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# env / secrets
+.env
+.env.*
+*.pem
+*.key
+
+# TypeScript
+*.tsbuildinfo
+
+# build output
+dist/
+build/
+out/
+
+# coverage
+coverage/
+.nyc_output/
+
+# Playwright (reports/artifacts)
+playwright-report/
+test-results/
+
+# runtime / local state (repo-specific)
+user_data/
+debug/
+data/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
