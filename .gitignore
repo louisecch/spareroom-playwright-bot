@@ -1,3 +1,19 @@
+node_modules
+dist
+
+# Persistent browser profile (contains cookies/session)
+user_data
+
+# Local run data
+data/*.json
+!data/.gitkeep
+
+# Debug artifacts (screenshots/HTML)
+debug/*
+!debug/.gitkeep
+
+.DS_Store
+
 # dependencies
 node_modules/
 
@@ -11,6 +27,7 @@ pnpm-debug.log*
 # env / secrets
 .env
 .env.*
+!.env.example
 *.pem
 *.key
 
