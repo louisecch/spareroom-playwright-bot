@@ -57,8 +57,13 @@ Currently locating back to the UK and the move-in date is ideal for me. Please l
   minDelayMs: 3_000,
   maxDelayMs: 8_000,
 
-  // Scheduler: run exactly on the hour + half-hour.
-  cron: "0,30 * * * *",
+  /**
+   * Scheduler: run once per day at a randomized time.
+   * These bounds are minutes from midnight (local scheduler timezone).
+   * Default: any time 00:00–23:59.
+   */
+  dailyRunWindowStartMinute: 0,
+  dailyRunWindowEndMinute: 23 * 60 + 59,
 
   // NOTE: currently unused (we default to headed while developing selectors).
   // Later, you can re-enable headless-drop behavior by using this probability in `src/browser.ts`.
