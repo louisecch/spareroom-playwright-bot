@@ -35,7 +35,13 @@ export const CONFIG = {
   // Rotate 3–5 templates to reduce spam detection risk.
   // Keep these short, human, and varied. Avoid URLs.
   messageTemplates: [
-    "Hi! I saw your ad and I’m interested. Could you share a bit more about the room/flat and the move-in flexibility? Thanks!",
+    `Hi [ad poster's name], hope you’re well.
+
+I’m a freelance creative (in my 30s!) who’s a borderline clean freak (👉🏻 my 50+ Airbnb street cred as both a guest and host 👀 - https://www.airbnb.com/users/show/29574475).
+
+I’m looking for a household that’s fairly social but also respectful of each other’s space.
+
+Currently locating back to the UK and the move-in date is ideal for me. Please let me know if that works on your end — I’d love to arrange a viewing. Thanks so much 😊`,
     "Hey there — your place looks like a good fit for me. Is it still available, and when would viewings be possible?",
     "Hi, I’m looking for a place in the area and your listing caught my eye. Can I ask if it’s still available and what the next steps are?",
     "Hello! I’m interested in the room. What’s the earliest move-in date, and is there a best time for a quick viewing this week?",

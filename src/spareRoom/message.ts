@@ -7,6 +7,29 @@ export type MessageResult =
   | { status: "sent" }
   | { status: "skipped"; reason: string };
 
+function shouldActuallySend(): boolean {
+  // Safety default while testing: do NOT send unless explicitly enabled.
+  return process.env.SEND_MESSAGES === "1";
+}
+
+async function getAdPosterName(page: Page): Promise<string | null> {
+  const el = page.locator(SELECTORS.adPosterNameSelector).first();
+  if (!(await el.isVisible().catch(() => false))) return null;
+  const text = (await el.textContent().catch(() => null)) ?? null;
+  const name = text?.replace(/\s+/g, " ").trim();
+  return name ? name : null;
+}
+
+function renderTemplate(template: string, params: { adPosterName?: string | null }): string {
+  const name = params.adPosterName?.trim();
+  // Support the exact placeholder the user wrote, plus a couple of common variants.
+  const safeName = name && name.length > 0 ? name : "there";
+  return template
+    .replaceAll("[ad poster's name]", safeName)
+    .replaceAll("[ad poster’s name]", safeName)
+    .replaceAll("{{name}}", safeName);
+}
+
 function pickTemplateIndex(adId: string, templatesCount: number): number {
   // Deterministic rotation per adId to keep behavior stable across retries.
   let hash = 0;
@@ -67,7 +90,10 @@ export async function messageAd(params: {
   templates: readonly string[];
 }): Promise<{ result: MessageResult; templateIndex: number }> {
   const templateIndex = pickTemplateIndex(params.adId, params.templates.length);
-  const message = params.templates[templateIndex] ?? "";
+  const template = params.templates[templateIndex] ?? "";
+  // Capture the poster name early (often visible on the ad page).
+  const adPosterName = await getAdPosterName(params.page).catch(() => null);
+  const message = renderTemplate(template, { adPosterName });
 
   // If we're already on the contact form (some flows navigate directly), skip the CTA click.
   const textarea = await findMessageTextarea(params.page);
@@ -108,6 +134,14 @@ export async function messageAd(params: {
   if (!(await send.isVisible().catch(() => false))) {
     return {
       result: { status: "skipped", reason: "Send button not found/visible (UI may have changed)" },
+      templateIndex
+    };
+  }
+
+  if (!shouldActuallySend()) {
+    console.log("Preview mode: message filled but not sent (set SEND_MESSAGES=1 to actually send).");
+    return {
+      result: { status: "skipped", reason: "Preview mode (SEND_MESSAGES!=1)" },
       templateIndex
     };
   }

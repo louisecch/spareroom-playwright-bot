@@ -39,6 +39,9 @@ export const SELECTORS = {
   // Ad detail URLs typically contain `flatshare_id=1234567`.
   adIdParam: "flatshare_id",
 
+  // Ad poster name on listing/detail pages.
+  adPosterNameSelector: 'strong.profile-photo__name[itemprop="name"], strong.profile-photo__name',
+
   // Contact controls on an ad detail page.
   emailAdvertiserText: /email\s+advertiser|message\s+advertiser|contact\s+advertiser/i,
   // Preferred listing-page "Message" CTA (you provided exact markup pattern).
