@@ -33,12 +33,17 @@ export const SELECTORS = {
   // This XPath matches any element whose text contains "New today" (case sensitive-ish via normalize-space).
   // If SpareRoom changes this label, update here.
   newTodayXPath: 'xpath=//*[contains(normalize-space(.), "New today")]',
+  // Listing card status label; we filter by text "NEW TODAY" (not just "NEW").
+  listingStatusSelector: ".listing-card__status",
 
   // Ad detail URLs typically contain `flatshare_id=1234567`.
   adIdParam: "flatshare_id",
 
   // Contact controls on an ad detail page.
   emailAdvertiserText: /email\s+advertiser|message\s+advertiser|contact\s+advertiser/i,
+  // Preferred listing-page "Message" CTA (you provided exact markup pattern).
+  listingMessageButtonSelector:
+    'a.button.button--wide[rel="nofollow"][href*="flatshare_detail.pl"][href*="mode=contact"][href*="submode=byemail"]',
 
   // Common send button text.
   sendButtonText: /send/i

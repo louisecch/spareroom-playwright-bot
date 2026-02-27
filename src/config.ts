@@ -13,6 +13,12 @@ export const CONFIG = {
   // SpareRoom currently serves this at `/flatshare/savesearch.pl`.
   savedSearchesPath: "/flatshare/savesearch.pl",
 
+  /**
+   * Optional: scrape these search result pages directly (preferred).
+   * If empty, the bot falls back to scraping via the Saved Searches hub page.
+   */
+  targetSearchResultUrls: ["https://www.spareroom.co.uk/flatshare/index.cgi?search_id=1418338744"],
+
   // Optional: after login is confirmed, navigate here (useful for verifying a specific saved search).
   postLoginUrl:
     "https://www.spareroom.co.uk/flatshare/index.cgi?search_id=1418338503&search_type=offered&mode=edit&editing=1418338503",

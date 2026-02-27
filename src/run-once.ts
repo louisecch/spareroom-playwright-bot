@@ -1,7 +1,7 @@
 import { CONFIG } from "./config";
 import { launchPersistentContext, saveDebugArtifacts } from "./browser";
 import { assertLoggedIn } from "./auth";
-import { scrapeNewTodayFromSavedSearches } from "./spareRoom/scrape";
+import { scrapeNewTodayFromResultsPages, scrapeNewTodayFromSavedSearches } from "./spareRoom/scrape";
 import { loadMessagedAdsStore, saveMessagedAdsStore } from "./utils/messagedAdsStore";
 import { messageAd } from "./spareRoom/message";
 import { randomDelay } from "./utils/delay";
@@ -16,12 +16,24 @@ export async function runOnce(): Promise<void> {
     await page.goto(CONFIG.baseUrl, { waitUntil: "domcontentloaded" });
     await assertLoggedIn(page);
 
-    console.log("Scraping Saved Searches for 'New today' ads...");
-    const scraped = await scrapeNewTodayFromSavedSearches({
-      page,
-      baseUrl: CONFIG.baseUrl,
-      savedSearchesPath: CONFIG.savedSearchesPath
-    });
+    const hasTargetUrls = (CONFIG.targetSearchResultUrls?.length ?? 0) > 0;
+    console.log(
+      hasTargetUrls
+        ? "Scraping target search results for 'New today' ads..."
+        : "Scraping Saved Searches for 'New today' ads..."
+    );
+
+    const scraped = hasTargetUrls
+      ? await scrapeNewTodayFromResultsPages({
+          page,
+          baseUrl: CONFIG.baseUrl,
+          searchResultUrls: [...CONFIG.targetSearchResultUrls]
+        })
+      : await scrapeNewTodayFromSavedSearches({
+          page,
+          baseUrl: CONFIG.baseUrl,
+          savedSearchesPath: CONFIG.savedSearchesPath
+        });
 
     const candidates = scraped.filter((ad) => !store.ads[ad.adId]);
     console.log(`Found ${scraped.length} new-today ads; ${candidates.length} not yet messaged.`);

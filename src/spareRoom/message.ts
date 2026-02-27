@@ -15,6 +15,15 @@ function pickTemplateIndex(adId: string, templatesCount: number): number {
 }
 
 async function clickEmailAdvertiserIfPresent(page: Page): Promise<boolean> {
+  // Preferred: the listing details page has a dedicated "Message" CTA that navigates
+  // to the contact-by-email form (you provided exact markup pattern).
+  const listingMessageLink = page.locator(SELECTORS.listingMessageButtonSelector).first();
+  if (await listingMessageLink.isVisible().catch(() => false)) {
+    await randomDelay(CONFIG.minDelayMs, CONFIG.maxDelayMs);
+    await listingMessageLink.click().catch(() => {});
+    return true;
+  }
+
   const button = page.getByRole("button", { name: SELECTORS.emailAdvertiserText }).first();
   const link = page.getByRole("link", { name: SELECTORS.emailAdvertiserText }).first();
 
@@ -60,30 +69,40 @@ export async function messageAd(params: {
   const templateIndex = pickTemplateIndex(params.adId, params.templates.length);
   const message = params.templates[templateIndex] ?? "";
 
-  // Conditional handling: some ads are phone-only.
-  const opened = await clickEmailAdvertiserIfPresent(params.page);
-  if (!opened) {
-    return {
-      result: { status: "skipped", reason: "No Email/Message Advertiser control (likely phone-only)" },
-      templateIndex
-    };
-  }
-
-  await randomDelay(CONFIG.minDelayMs, CONFIG.maxDelayMs);
-
+  // If we're already on the contact form (some flows navigate directly), skip the CTA click.
   const textarea = await findMessageTextarea(params.page);
   const visible = await textarea.isVisible().catch(() => false);
   if (!visible) {
-    return {
-      result: { status: "skipped", reason: "Message textarea not found/visible (UI may have changed)" },
-      templateIndex
-    };
-  }
+    // Conditional handling: some ads are phone-only (no email form).
+    const opened = await clickEmailAdvertiserIfPresent(params.page);
+    if (!opened) {
+      return {
+        result: { status: "skipped", reason: "No Message/Email control (likely phone-only)" },
+        templateIndex
+      };
+    }
 
-  await randomDelay(CONFIG.minDelayMs, CONFIG.maxDelayMs);
-  await textarea.click();
-  await randomDelay(CONFIG.minDelayMs, CONFIG.maxDelayMs);
-  await textarea.fill(message);
+    await randomDelay(CONFIG.minDelayMs, CONFIG.maxDelayMs);
+
+    const textarea2 = await findMessageTextarea(params.page);
+    const visible2 = await textarea2.isVisible().catch(() => false);
+    if (!visible2) {
+      return {
+        result: { status: "skipped", reason: "Message textarea not found/visible (UI may have changed)" },
+        templateIndex
+      };
+    }
+
+    await randomDelay(CONFIG.minDelayMs, CONFIG.maxDelayMs);
+    await textarea2.click();
+    await randomDelay(CONFIG.minDelayMs, CONFIG.maxDelayMs);
+    await textarea2.fill(message);
+  } else {
+    await randomDelay(CONFIG.minDelayMs, CONFIG.maxDelayMs);
+    await textarea.click();
+    await randomDelay(CONFIG.minDelayMs, CONFIG.maxDelayMs);
+    await textarea.fill(message);
+  }
 
   const send = await findSendButton(params.page);
   if (!(await send.isVisible().catch(() => false))) {
