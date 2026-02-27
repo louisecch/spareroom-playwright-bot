@@ -75,3 +75,6 @@ SEND_MESSAGES=1 npm run once
 npm run start
 ```
 
+## Demo
+
+https://github.com/user-attachments/assets/a70c36fe-2bfb-4d1b-bf71-b61904c6d43c
