@@ -217,6 +217,23 @@ async function clickLoginThenFacebook(page: import("playwright").Page): Promise<
   await clickFacebookContinueAsIfPresent(fbAuthPage).catch(() => {});
 }
 
+async function clickSavedSearchesIfPresent(page: import("playwright").Page): Promise<boolean> {
+  // "Saved searches" usually lives under the account navigation.
+  const savedSearches =
+    page
+      .getByRole("link", { name: SELECTORS.savedSearchesNavText })
+      .first()
+      .or(page.getByRole("button", { name: SELECTORS.savedSearchesNavText }).first());
+
+  if (await savedSearches.isVisible().catch(() => false)) {
+    console.log('Clicking "Saved searches"...');
+    await savedSearches.click({ timeout: 10_000 }).catch(() => {});
+    await page.waitForLoadState("domcontentloaded").catch(() => {});
+    return true;
+  }
+  return false;
+}
+
 async function main(): Promise<void> {
   // For login, prefer a visible browser window.
   if (!process.env.FORCE_HEADLESS && !process.env.FORCE_HEADED) {
@@ -246,13 +263,19 @@ async function main(): Promise<void> {
       try {
         await assertLoggedIn(page);
         console.log("Logged in confirmed. Persistent session saved to `user_data/`.");
-        // Confirm we can access the saved searches page once authenticated.
-        await page.goto(savedUrl, { waitUntil: "domcontentloaded" }).catch(() => {});
+        // Prefer clicking through UI first (more robust than hard navigation if the site changes).
+        // If it isn't visible, fall back to direct navigation.
+        const clicked = await clickSavedSearchesIfPresent(page).catch(() => false);
+        if (!clicked) {
+          await page.goto(savedUrl, { waitUntil: "domcontentloaded" }).catch(() => {});
+        }
         if (postLoginUrl) {
           await page.goto(postLoginUrl, { waitUntil: "domcontentloaded" }).catch(() => {});
         }
-        await context.close();
-        return;
+        console.log("Leaving browser open for inspection. Press Ctrl+C in the terminal when you're done.");
+        // Keep the browser open so you can inspect selectors / page state.
+        // This is especially useful while developing. We'll add a "close on success" toggle later if needed.
+        await new Promise<void>(() => {});
       } catch {
         // Not logged in yet — try the Facebook shortcut once in a while, then keep waiting.
       }

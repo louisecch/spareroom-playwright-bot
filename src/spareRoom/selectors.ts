@@ -27,6 +27,7 @@ export const SELECTORS = {
 
   // Saved searches page.
   savedSearchLinkToResults: /view\s*matches|view\s*results|view/i,
+  savedSearchesNavText: /saved\s+searches/i,
 
   // "New today" label — requirement explicitly calls out CSS/XPath.
   // This XPath matches any element whose text contains "New today" (case sensitive-ish via normalize-space).

@@ -10,7 +10,8 @@ export const CONFIG = {
 
   // Key requirement: scrape your Saved Search area as the entry point.
   // We'll navigate here every run.
-  savedSearchesPath: "/content/myaccount/savedsearches/",
+  // SpareRoom currently serves this at `/flatshare/savesearch.pl`.
+  savedSearchesPath: "/flatshare/savesearch.pl",
 
   // Optional: after login is confirmed, navigate here (useful for verifying a specific saved search).
   postLoginUrl:
@@ -47,7 +48,8 @@ export const CONFIG = {
   // Scheduler: run exactly on the hour + half-hour.
   cron: "0,30 * * * *",
 
-  // Headless-drop: occasionally run headed to detect CAPTCHAs.
+  // NOTE: currently unused (we default to headed while developing selectors).
+  // Later, you can re-enable headless-drop behavior by using this probability in `src/browser.ts`.
   headedProbability: 0.15
 } as const;
 

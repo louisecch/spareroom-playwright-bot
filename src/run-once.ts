@@ -60,6 +60,12 @@ export async function runOnce(): Promise<void> {
     const artifacts = await saveDebugArtifacts({ page, label: "run-failed" });
     console.error("Saved debug artifacts:", artifacts);
   } finally {
+    // While developing selectors, keep the browser open for inspection.
+    // Press Ctrl+C in the terminal when you're done.
+    if (process.env.KEEP_BROWSER_OPEN === "1") {
+      console.log("KEEP_BROWSER_OPEN=1 set — leaving browser open for inspection. Press Ctrl+C when done.");
+      await new Promise<void>(() => {});
+    }
     await context.close().catch(() => {});
   }
 }

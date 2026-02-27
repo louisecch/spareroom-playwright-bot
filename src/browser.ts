@@ -10,10 +10,13 @@ import { ensureDir } from "./utils/files";
 chromium.use(StealthPlugin());
 
 export function shouldRunHeaded(): boolean {
-  // You can override by exporting FORCE_HEADED=1 in your shell.
-  if (process.env.FORCE_HEADED === "1") return true;
+  // While we're developing selectors, default to HEADED (visible browser).
+  // You can override explicitly via env vars:
+  // - FORCE_HEADLESS=1  -> always headless
+  // - FORCE_HEADED=1    -> always headed
   if (process.env.FORCE_HEADLESS === "1") return false;
-  return Math.random() < CONFIG.headedProbability;
+  if (process.env.FORCE_HEADED === "1") return true;
+  return true;
 }
 
 export async function launchPersistentContext(): Promise<BrowserContext> {

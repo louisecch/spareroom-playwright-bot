@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "login": "tsx src/login.ts",
-    "once": "tsx src/run-once.ts",
+    "once": "KEEP_BROWSER_OPEN=1 tsx src/run-once.ts",
     "start": "tsx src/runner.ts"
   },
   "keywords": [],
